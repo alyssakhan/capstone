@@ -49,4 +49,97 @@ h1{font-size:clamp(1.7rem,6vw,2.6rem);margin:.4rem 0 .2rem;outline:none}
 @keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
 
 /* ---------- Y2K THEME ---------- */
-:root{--b2:#e6d2ff;--b3:
+:root{--b2:#e6d2ff;--b3:#ffd3f0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--b2:#2a1a6e;--b3:#4a1550}}
+:root[data-theme="dark"]{--b2:#2a1a6e;--b3:#4a1550}
+body{background:repeating-linear-gradient(0deg,rgba(255,255,255,.28) 0 1px,transparent 1px 30px),repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 1px,transparent 1px 30px),linear-gradient(135deg,var(--bg),var(--b2) 55%,var(--b3));background-attachment:fixed}
+h1{font-family:'Orbitron',sans-serif;color:#fff;text-shadow:2px 2px 0 #1b1646,4px 4px 0 var(--accent);letter-spacing:.04em}
+.badge{background:radial-gradient(circle at 30% 25%,#fff,#bfe6ff 50%,#c9a6ff);border:2px solid var(--ink);box-shadow:inset 0 -10px 18px rgba(90,70,220,.35),0 0 18px var(--accent)}
+.marq{overflow:hidden;white-space:nowrap;border:2px solid var(--ink);background:linear-gradient(90deg,#ff3fa4,#7a5cff,#2bd9ff);color:#fff;font-family:'Orbitron',sans-serif;font-size:.8rem;padding:.4rem 0;margin:0 auto 1.2rem;max-width:760px;border-radius:.4rem}
+.marq span{display:inline-block;padding-left:100%;animation:mq 14s linear infinite}
+@keyframes mq{to{transform:translateX(-100%)}}
+.bubble{color:#1b1646;font-family:'Orbitron',sans-serif;font-size:.78rem;border:2px solid #fff;background:radial-gradient(circle at 30% 22%,#fff 0 9%,transparent 10%),radial-gradient(circle at 35% 30%,#e9fbff,var(--soft) 55%,#6aa8ff);box-shadow:inset 0 -12px 20px rgba(90,70,220,.35),0 8px 16px rgba(30,20,100,.3),0 0 0 2px var(--ink),0 0 14px var(--glow)}
+.bubble:nth-child(3n+2){background:radial-gradient(circle at 30% 22%,#fff 0 9%,transparent 10%),radial-gradient(circle at 35% 30%,#ffe3f4,#ff9ad5 55%,#d56bff)}
+.bubble:nth-child(3n+3){background:radial-gradient(circle at 30% 22%,#fff 0 9%,transparent 10%),radial-gradient(circle at 35% 30%,#f6ffe0,#c6ff7a 55%,#52e0a8)}
+.bubble.add{background:transparent;border:3px dashed var(--accent);color:var(--accent);box-shadow:none;font-size:2.4rem}
+.panel{border-radius:.6rem;border:2px solid var(--ink);box-shadow:6px 6px 0 var(--accent);padding-top:0}
+.panel::before{content:"✦ what_i_learned.exe        _ □ ✕";display:block;margin:0 -1.6rem 1rem;padding:.5rem .9rem;background:linear-gradient(90deg,#4a5bff,#ff3fa4);color:#fff;font-family:'Orbitron',sans-serif;font-size:.7rem;white-space:pre;overflow:hidden}
+.panel input,.panel textarea{border-radius:.4rem;border:2px solid var(--ink);background:rgba(255,255,255,.92);color:#1b1646}
+.btn{background:linear-gradient(#fff,var(--soft) 50%,#7fb6ff);color:#1b1646;border:2px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.btn.danger{background:linear-gradient(#fff,#ffb3dc 50%,#ff6fbd)}
+.links li{background:rgba(255,63,164,.15);border-radius:.4rem}
+@media (prefers-reduced-motion:reduce){.marq span{padding-left:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="badge">💿<svg viewBox="0 0 100 100"><defs><path id="c" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs><text><textPath href="#c">✦ capstone project ✦ what i learned ✦ </textPath></text></svg></div>
+<h1 id="title" contenteditable="true" spellcheck="false">My Capstone Project</h1>
+<p class="sub" id="sub" contenteditable="true" spellcheck="false">Click a bubble to write what I learned and add links!</p>
+<div class="marq"><span>✦ welcome to my capstone ✦ click a bubble ✦ learn • link • repeat ✦ thanks for visiting ✦</span></div>
+<p class="hint">✨ Tip: you can click the title and this text to change them too.</p>
+<div class="grid" id="grid"></div>
+
+<div class="overlay" id="ov"><div class="panel" role="dialog" aria-modal="true">
+<label for="t">Topic</label><input id="t" maxlength="40">
+<label for="n">What I learned 💭</label><textarea id="n" placeholder="Write about what you learned here..."></textarea>
+<label>Links 🔗</label>
+<div class="row"><input id="ll" placeholder="Name (ex: my tutorial)"><input id="lu" placeholder="https://..."></div>
+<div class="row"><button class="btn" id="addl">+ Add link</button></div>
+<ul class="links" id="ls"></ul>
+<div class="foot"><button class="btn danger" id="del">Delete</button><button class="btn" id="done">Done ✓</button></div>
+</div></div>
+
+<script>
+var KEY='capstone-learned-v1';
+var data={title:'My Capstone Project',sub:'Click a bubble to write what I learned and add links!',items:[
+{id:1,title:'HTML',note:'',links:[]},{id:2,title:'CSS',note:'',links:[]},
+{id:3,title:'Animations',note:'',links:[]},{id:4,title:'Problem Solving',note:'',links:[]}]};
+try{var s=localStorage.getItem(KEY);if(s){var p=JSON.parse(s);if(p&&p.items)data=p}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+var $=function(i){return document.getElementById(i)};
+var cur=null;
+function burst(x,y){var e=['💿','✨','🦋','⭐','💖'];for(var i=0;i<10;i++){var f=document.createElement('span');f.className='fx';f.textContent=e[i%5];f.style.left=x+'px';f.style.top=y+'px';var a=Math.random()*6.28,d=50+Math.random()*80;f.style.setProperty('--dx',Math.cos(a)*d+'px');f.style.setProperty('--dy',Math.sin(a)*d+'px');document.body.appendChild(f);setTimeout(function(n){n.remove()}.bind(null,f),1000)}}
+function render(){
+ var g=$('grid');g.textContent='';
+ data.items.forEach(function(it){
+  var b=document.createElement('button');b.className='bubble';
+  b.appendChild(document.createTextNode(it.title||'New topic'));
+  if(it.note){var pp=document.createElement('span');pp.className='pop';pp.textContent='💭';b.appendChild(pp)}
+  if(it.links.length){var t=document.createElement('span');t.className='tag';t.textContent='🔗 '+it.links.length;b.appendChild(t)}
+  b.onclick=function(e){burst(e.clientX,e.clientY);open(it)};
+  g.appendChild(b)});
+ var a=document.createElement('button');a.className='bubble add';a.textContent='+';a.setAttribute('aria-label','Add a new thing I learned');
+ a.onclick=function(e){burst(e.clientX,e.clientY);var it={id:Date.now(),title:'New topic',note:'',links:[]};data.items.push(it);save();render();open(it)};
+ g.appendChild(a);
+}
+function links(){
+ var ul=$('ls');ul.textContent='';
+ cur.links.forEach(function(l,i){
+  var li=document.createElement('li'),a=document.createElement('a');
+  a.href=l.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=l.label;
+  var x=document.createElement('button');x.textContent='✕';x.setAttribute('aria-label','Remove link');
+  x.onclick=function(){cur.links.splice(i,1);save();links();render()};
+  li.appendChild(a);li.appendChild(x);ul.appendChild(li)});
+}
+function open(it){cur=it;$('t').value=it.title;$('n').value=it.note;$('ll').value='';$('lu').value='';links();$('ov').classList.add('open');$('t').focus()}
+function close(){$('ov').classList.remove('open');cur=null;render()}
+$('t').oninput=function(){cur.title=this.value;save()};
+$('n').oninput=function(){cur.note=this.value;save()};
+$('addl').onclick=function(){
+ var u=$('lu').value.trim();if(!u)return;
+ if(!/^https?:\/\//i.test(u))u='https://'+u;
+ try{new URL(u)}catch(e){return}
+ cur.links.push({label:$('ll').value.trim()||u,url:u});
+ $('ll').value='';$('lu').value='';save();links()};
+$('done').onclick=close;
+$('del').onclick=function(){if(confirm('Delete this bubble?')){data.items=data.items.filter(function(i){return i!==cur});save();close()}};
+$('ov').onclick=function(e){if(e.target===this)close()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&cur)close()});
+$('title').textContent=data.title;$('sub').textContent=data.sub;
+$('title').oninput=function(){data.title=this.textContent;save()};
+$('sub').oninput=function(){data.sub=this.textContent;save()};
+render();
+</script>
+</body>
+</html>
